@@ -50,7 +50,7 @@ func FromString(tag string) (SemVer, error) {
 
 	commitDistance := 0
 	if groups[6] != "" {
-		rc, err = strconv.Atoi(groups[6])
+		commitDistance, err = strconv.Atoi(groups[6])
 		if err != nil {
 			return SemVer{}, fmt.Errorf("could not parse '%s' into a valid semver", tag)
 		}

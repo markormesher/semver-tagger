@@ -30,6 +30,10 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 // TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
 var defaultBranches = []string{"main", "master", "develop"}
 
+func bold(str string) string {
+	return "\033[1m" + str + "\033[0m"
+}
+
 func main() {
 	// config
 
@@ -155,8 +159,8 @@ func main() {
 
 	newVer := currentVer.Bump(majorFlag, minorFlag, patchFlag, rcFlag, noRcFlag)
 
-	log.Info("Prev:  %s", currentVer.String())
-	log.Info("New:   %s", newVer.String())
+	log.Info("Prev:  %s", bold(currentVer.String()))
+	log.Info("New:   %s", bold(newVer.String()))
 
 	err = git.CreateTag(&newVer, noConfirmFlag)
 	if err != nil {

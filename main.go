@@ -173,6 +173,7 @@ func main() {
 		log.Error("%v", err)
 		os.Exit(1)
 	}
+	log.Info("Created tag")
 
 	if *pushFlag {
 		err = git.PushTags()
@@ -180,5 +181,6 @@ func main() {
 			log.Error("%v", err)
 			os.Exit(1)
 		}
+		log.Info("Pushed tags")
 	}
 }

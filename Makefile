@@ -9,6 +9,10 @@ lint:
 		exit 1
 	fi
 
+.PHONY: test
+test:
+	go test ./...
+
 .PHONY: build
 build:
 	go build -o ./build/main ./main.go

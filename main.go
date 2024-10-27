@@ -14,12 +14,12 @@ import (
 var usage = `
 Usage: semver-tagger [-a|-M|-m|-p] [options]
 
--a                Detect the tag type based on commit messages since the last tag (default behaviour)
 -M                Bump the major version number
 -m                Bump the minor version number
 -p                Bump the patch version number
--rc               Create a release candidate tag
--init             Create the initial tag (v0.1.0)
+-rc               Add or increment the release candidate counter.
+-no-rc            Remove the release candidate counter.
+-init             Create the initial v0.1.0 version.
 
 -v, --verbose     Verbose logging
 -f, --force       Create a tag even no matter what
@@ -33,12 +33,12 @@ var defaultBranches = []string{"main", "master", "develop"}
 func main() {
 	// config
 
-	var autoFlag, majorFlag, minorFlag, patchFlag, rcFlag, initFlag, verboseFlag, forceFlag, noConfirmFlag, pushFlag bool
-	flag.BoolVar(&autoFlag, "a", false, "")
+	var majorFlag, minorFlag, patchFlag, rcFlag, noRcFlag, initFlag, verboseFlag, forceFlag, noConfirmFlag, pushFlag bool
 	flag.BoolVar(&majorFlag, "M", false, "")
 	flag.BoolVar(&minorFlag, "m", false, "")
 	flag.BoolVar(&patchFlag, "p", false, "")
 	flag.BoolVar(&rcFlag, "rc", false, "")
+	flag.BoolVar(&noRcFlag, "no-rc", false, "")
 	flag.BoolVar(&initFlag, "init", false, "")
 	flag.BoolVar(&verboseFlag, "v", false, "")
 	flag.BoolVar(&forceFlag, "f", false, "")
@@ -55,11 +55,7 @@ func main() {
 		log.Verbose = true
 	}
 
-	// ensure only one version type flag was passed
 	qtyTagTypeFlags := 0
-	if autoFlag {
-		qtyTagTypeFlags++
-	}
 	if majorFlag {
 		qtyTagTypeFlags++
 	}
@@ -70,11 +66,13 @@ func main() {
 		qtyTagTypeFlags++
 	}
 	if qtyTagTypeFlags > 1 {
-		log.Error("Invalid usage: cannot pass more than one of -a / -M / -m / -p")
+		log.Error("Invalid usage: cannot pass more than one of -M / -m / -p")
 		os.Exit(1)
-	} else if qtyTagTypeFlags == 0 {
-		log.Debug("No tag set; assuming -a")
-		autoFlag = true
+	}
+
+	if rcFlag && noRcFlag {
+		log.Error("Invalid usage: cannot pass both -rc and -no-rc")
+		os.Exit(1)
 	}
 
 	// validate the repo state
@@ -141,31 +139,7 @@ func main() {
 
 	// finally, decide the new version and tag it
 
-	newVer := currentVer
-
-	if autoFlag {
-		// TODO: build this
-		log.Error("Auto-tag isn't built yet. Sorry")
-		os.Exit(1)
-	}
-
-	switch {
-	case majorFlag:
-		newVer.Major++
-		newVer.Minor = 0
-		newVer.Patch = 0
-
-	case minorFlag:
-		newVer.Minor++
-		newVer.Patch = 0
-
-	case patchFlag:
-		newVer.Patch++
-	}
-
-	if rcFlag {
-		newVer.Rc++
-	}
+	newVer := currentVer.Bump(majorFlag, minorFlag, patchFlag, rcFlag, noRcFlag)
 
 	log.Info("Prev:  %s", currentVer.String())
 	log.Info("New:   %s", newVer.String())

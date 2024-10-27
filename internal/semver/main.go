@@ -73,3 +73,32 @@ func (sv *SemVer) String() string {
 	}
 	return out
 }
+
+func (sv SemVer) Bump(major, minor, patch, rc, noRc bool) SemVer {
+	switch {
+	case major:
+		sv.Major++
+		sv.Minor = 0
+		sv.Patch = 0
+		sv.Rc = 0
+
+	case minor:
+		sv.Minor++
+		sv.Patch = 0
+		sv.Rc = 0
+
+	case patch:
+		sv.Patch++
+		sv.Rc = 0
+	}
+
+	if rc {
+		sv.Rc++
+	}
+
+	if noRc {
+		sv.Rc = 0
+	}
+
+	return sv
+}

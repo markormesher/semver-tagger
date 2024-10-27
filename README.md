@@ -43,37 +43,37 @@ Options:
 Command: semver-tagger -M
 Examples:
   v1.2.3      ->  v2.0.0
-  v1.2.3-rc2  ->  v2.0.0  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v2.0.0
 
 # Bump the major version and mark it as a release candidate
 Command: semver-tagger -M -rc
 Examples:
   v1.2.3      ->  v2.0.0-rc1
-  v1.2.3-rc2  ->  v2.0.0-rc1  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v2.0.0-rc1
 
 # Bump the minor version
 Command: semver-tagger -m
 Examples:
   v1.2.3      ->  v1.3.0
-  v1.2.3-rc2  ->  v1.3.0  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v1.3.0
 
 # Bump the minor version and mark it as a release candidate
 Command: semver-tagger -m -rc
 Examples:
   v1.2.3      ->  v1.3.0-rc1
-  v1.2.3-rc2  ->  v1.3.0-rc1  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v1.3.0-rc1
 
 # Bump the patch version
 Command: semver-tagger -p
 Examples:
   v1.2.3      ->  v1.2.4
-  v1.2.3-rc2  ->  v1.2.4  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v1.2.4
 
 # Bump the patch version and mark it as a release candidate
 Command: semver-tagger -p -rc
 Examples:
   v1.2.3      ->  v1.2.4-rc1
-  v1.2.3-rc2  ->  v1.2.4-rc1  (note that the RC counter is reset)
+  v1.2.3-rc2  ->  v1.2.4-rc1
 
 # Bump the release candidate counter only
 Command: semver-tagger -rc

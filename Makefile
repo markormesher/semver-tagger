@@ -11,10 +11,10 @@ lint:
 
 .PHONY: build
 build:
-	go build -o ./build/main ./cmd/*.go
+	go build -o ./build/main ./main.go
 
 .PHONY: run
 run:
-	go run ./cmd/*.go -v
+	go run ./main.go
 
 .ONESHELL:

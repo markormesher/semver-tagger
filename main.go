@@ -70,6 +70,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if qtyTagTypeFlags > 0 && initFlag {
+		log.Error("Invalid usage: cannot pass -init with any other version flags")
+		os.Exit(1)
+	}
+
 	if rcFlag && noRcFlag {
 		log.Error("Invalid usage: cannot pass both -rc and -no-rc")
 		os.Exit(1)
@@ -108,27 +113,30 @@ func main() {
 	// get the current version
 
 	description, err := git.Describe()
-	if err != nil {
-		if initFlag {
-			log.Info("Creating the initial tag")
-			err = git.CreateTag(&semver.SemVer{Prefix: "v", Major: 0, Minor: 1, Patch: 0}, noConfirmFlag)
-			if err != nil {
-				log.Error("%v", err)
-				os.Exit(1)
-			}
+	if err != nil && !initFlag {
+		log.Error("%v", err)
+		os.Exit(1)
+	}
+
+	var currentVer semver.SemVer
+	if initFlag {
+		if description != "" {
+			log.Error("Refusing to create initial version when other versions already exist")
+			os.Exit(1)
 		} else {
+			// set current version to v0.0.0 and trigger a minor version bump
+			currentVer = semver.SemVer{Prefix: "v"}
+			minorFlag = true
+		}
+	} else {
+		currentVer, err = semver.FromString(description)
+		if err != nil {
 			log.Error("%v", err)
 			os.Exit(1)
 		}
 	}
 
-	currentVer, err := semver.FromString(description)
-	if err != nil {
-		log.Error("%v", err)
-		os.Exit(1)
-	}
-
-	if currentVer.CommitDistance == 0 {
+	if currentVer.CommitDistance == 0 && !initFlag {
 		if forceFlag {
 			log.Warn("There have been no commits since the last tag, but continuing because force flag is specified")
 		} else {

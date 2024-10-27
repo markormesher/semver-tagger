@@ -65,18 +65,24 @@ func main() {
 	if patchFlag {
 		qtyTagTypeFlags++
 	}
+
+	if qtyTagTypeFlags == 0 {
+		log.Error("Invalid usage: must specify one of -M / -m / -p")
+		os.Exit(1)
+	}
+
 	if qtyTagTypeFlags > 1 {
-		log.Error("Invalid usage: cannot pass more than one of -M / -m / -p")
+		log.Error("Invalid usage: cannot specify more than one of -M / -m / -p")
 		os.Exit(1)
 	}
 
 	if qtyTagTypeFlags > 0 && initFlag {
-		log.Error("Invalid usage: cannot pass -init with any other version flags")
+		log.Error("Invalid usage: cannot specify -init with any other version flags")
 		os.Exit(1)
 	}
 
 	if rcFlag && noRcFlag {
-		log.Error("Invalid usage: cannot pass both -rc and -no-rc")
+		log.Error("Invalid usage: cannot specify both -rc and -no-rc")
 		os.Exit(1)
 	}
 

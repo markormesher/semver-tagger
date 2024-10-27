@@ -67,3 +67,12 @@ func CreateTag(tag *semver.SemVer, noConfirm bool) error {
 
 	return nil
 }
+
+func PushTags() error {
+	_, err := execCmd("git push --tags")
+	if err != nil {
+		return fmt.Errorf("error pushing tags: %w", err)
+	}
+
+	return nil
+}

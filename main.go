@@ -24,6 +24,7 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 -v, --verbose     Verbose logging
 -f, --force       Create a tag even no matter what
 -y, --no-confirm  Create the tag without confirming
+-P, --push        Run 'git push --tags' after creating the tag
 `
 
 // TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
@@ -42,6 +43,8 @@ func main() {
 	forceFlag = flag.Bool("force", false, "")
 	noConfirmFlag := flag.Bool("y", false, "")
 	noConfirmFlag = flag.Bool("no-confirm", false, "")
+	pushFlag := flag.Bool("P", false, "")
+	pushFlag = flag.Bool("push", false, "")
 
 	flag.Usage = func() { fmt.Println(usage) }
 	flag.Parse()
@@ -169,5 +172,13 @@ func main() {
 	if err != nil {
 		log.Error("%v", err)
 		os.Exit(1)
+	}
+
+	if *pushFlag {
+		err = git.PushTags()
+		if err != nil {
+			log.Error("%v", err)
+			os.Exit(1)
+		}
 	}
 }

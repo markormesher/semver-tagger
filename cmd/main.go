@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"slices"
 
 	"github.com/markormesher/semver-tagger/internal/git"
 	"github.com/markormesher/semver-tagger/internal/log"
@@ -20,6 +21,9 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 -f, --force       Create a tag even if the repo is not clean or is on a non-default branch
 -v, --verbose     Verbose logging
 `
+
+// TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
+var defaultBranches = []string{"main", "master", "develop"}
 
 func main() {
 	// config
@@ -74,21 +78,16 @@ func main() {
 		}
 	}
 
-	defaultBranch, err := git.DefaultBranch()
-	if err != nil {
-		log.Error("Failed to check default branch: %v", err)
-		os.Exit(1)
-	}
 	currentBranch, err := git.CurrentBranch()
 	if err != nil {
 		log.Error("Failed to check current branch: %v", err)
 		os.Exit(1)
 	}
-	if defaultBranch != currentBranch {
+	if !slices.Contains(defaultBranches, currentBranch) {
 		if *forceFlag {
-			log.Warn("Repo is not on the default branch, but continuing because force flag is specified")
+			log.Warn("Current branch (%s) doesn't look like a default branch, but continuing because force flag is specified", currentBranch)
 		} else {
-			log.Error("Repo is not on the default branch")
+			log.Error("Current branch (%s) doesn't look like a default branch", currentBranch)
 			os.Exit(1)
 		}
 	}

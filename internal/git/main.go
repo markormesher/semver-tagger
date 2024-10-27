@@ -3,6 +3,7 @@ package git
 import (
 	"fmt"
 	"os/exec"
+	"strings"
 
 	"github.com/markormesher/semver-tagger/internal/log"
 )
@@ -14,7 +15,7 @@ func execCmd(cmd string) (string, error) {
 		return "", err
 	}
 
-	return string(out), nil
+	return strings.TrimSpace(string(out)), nil
 }
 
 func RepoIsClean() (bool, error) {
@@ -24,15 +25,6 @@ func RepoIsClean() (bool, error) {
 	}
 
 	return status == "", nil
-}
-
-func DefaultBranch() (string, error) {
-	branch, err := execCmd("basename $(git symbolic-ref --short refs/remotes/origin/HEAD)")
-	if err != nil {
-		return "", fmt.Errorf("error checking default branch: %w", err)
-	}
-
-	return branch, nil
 }
 
 func CurrentBranch() (string, error) {

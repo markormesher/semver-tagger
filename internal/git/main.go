@@ -1,11 +1,14 @@
 package git
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/markormesher/semver-tagger/internal/log"
+	"github.com/markormesher/semver-tagger/internal/semver"
 )
 
 func execCmd(cmd string) (string, error) {
@@ -34,4 +37,33 @@ func CurrentBranch() (string, error) {
 	}
 
 	return branch, nil
+}
+
+func Describe() (string, error) {
+	describe, err := execCmd("git describe --tags")
+	if err != nil {
+		return "", fmt.Errorf("error describing repo: %w", err)
+	}
+
+	return describe, nil
+}
+
+func CreateTag(tag *semver.SemVer, noConfirm bool) error {
+	if !noConfirm {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Create tag? [Yn] ")
+		input, _ := reader.ReadString('\n')
+		input = strings.TrimSpace(input)
+		if input != "" && input != "y" && input != "Y" {
+			log.Info("Aborting")
+			os.Exit(0)
+		}
+	}
+
+	_, err := execCmd(fmt.Sprintf("git tag -m '%s' '%s'", tag.String(), tag.String()))
+	if err != nil {
+		return fmt.Errorf("error creating tag: %w", err)
+	}
+
+	return nil
 }

@@ -48,6 +48,20 @@ func Describe() (string, error) {
 	return describe, nil
 }
 
+func CommitsSinceLastTag() ([]string, error) {
+	lastTag, err := execCmd("git describe --tags --abbrev=0")
+	if err != nil {
+		return nil, fmt.Errorf("error reading commits since last tag: %w", err)
+	}
+
+	commitMessages, err := execCmd("git log --pretty=format:\"%s\" " + lastTag + "..HEAD")
+	if err != nil {
+		return nil, fmt.Errorf("error reading commits since last tag: %w", err)
+	}
+
+	return strings.Split(commitMessages, "\n"), nil
+}
+
 func CreateTag(tag *semver.SemVer, noConfirm bool) error {
 	if !noConfirm {
 		reader := bufio.NewReader(os.Stdin)

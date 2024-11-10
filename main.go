@@ -78,7 +78,7 @@ func main() {
 		qtyTagTypeFlags++
 	}
 
-	if qtyTagTypeFlags == 0 {
+	if qtyTagTypeFlags == 0 && !rcFlag {
 		autoFlag = true
 		log.Info("No tag type specified; assuming -a for automatic")
 	}
@@ -166,25 +166,31 @@ func main() {
 	// determine the tag type if we're in auto mode
 
 	if autoFlag {
-		commitMessages, err := git.CommitsSinceLastTag()
-		if err != nil {
-			log.Error("%v", err)
-			os.Exit(1)
-		}
-
-		allPatchCommits := true
-		for _, msg := range commitMessages {
-			if !patchCommitPattern.MatchString(msg) {
-				allPatchCommits = false
-				break
-			}
-		}
-
-		if allPatchCommits {
-			patchFlag = true
+		if currentVer.Rc > 0 {
+			log.Debug("Latest tag is an RC; creating a RC tag")
+			rcFlag = true
 		} else {
-			log.Debug("Found one or more non-patch commits; creating a new minor tag")
-			minorFlag = true
+			commitMessages, err := git.CommitsSinceLastTag()
+			if err != nil {
+				log.Error("%v", err)
+				os.Exit(1)
+			}
+
+			allPatchCommits := true
+			for _, msg := range commitMessages {
+				if !patchCommitPattern.MatchString(msg) {
+					allPatchCommits = false
+					break
+				}
+			}
+
+			if allPatchCommits {
+				log.Debug("All commits since the latest tag are patch commits; creating a patch tag")
+				patchFlag = true
+			} else {
+				log.Debug("Found one or more non-patch commits since the latest tag; creating a minor tag")
+				minorFlag = true
+			}
 		}
 	}
 

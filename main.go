@@ -183,6 +183,7 @@ func main() {
 		if allPatchCommits {
 			patchFlag = true
 		} else {
+			log.Debug("Found one or more non-patch commits; creating a new minor tag")
 			minorFlag = true
 		}
 	}

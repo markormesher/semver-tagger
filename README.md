@@ -19,6 +19,7 @@ semver-tagger [options]
 Options:
 
 - Version type
+  - `-a` - automatically determine the version type (default behaviour if no other type flags are set).
   - `-M` - bump the major vesion.
   - `-m` - bump the minor vesion.
   - `-p` - bump the patch vesion.
@@ -87,3 +88,13 @@ Examples:
   v1.2.3      ->  v1.2.3  (no change)
   v1.2.3-rc2  ->  v1.2.3
 ```
+
+### Automatic Version Detection
+
+Setting the `-a` flag (or no version type flag at all) will cause the tool to determine the tag type automatically. The logic applied minimal:
+
+- If the latest tag is an RC, apply an RC tag.
+- Otherwise, if all commits since the last tag are chores, fixes or CI-related (as defined by the regex in `main.go`), apply a patch tag.
+- Otherwise, apply a minor tag.
+
+Automatic version detection will never create a major tag or remove the RC counter.

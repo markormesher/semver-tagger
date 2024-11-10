@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 
 	"github.com/markormesher/semver-tagger/internal/git"
@@ -14,6 +15,7 @@ import (
 var usage = `
 Usage: semver-tagger [-a|-M|-m|-p] [options]
 
+-a                Automatically determine the tag type (default behaviour)
 -M                Bump the major version number
 -m                Bump the minor version number
 -p                Bump the patch version number
@@ -30,6 +32,8 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 // TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
 var defaultBranches = []string{"main", "master", "develop"}
 
+var patchCommitPattern = *regexp.MustCompile(`^(chore|fix|ci)(\([\w \-]+\))?:`)
+
 func bold(str string) string {
 	return "\033[1m" + str + "\033[0m"
 }
@@ -37,7 +41,8 @@ func bold(str string) string {
 func main() {
 	// config
 
-	var majorFlag, minorFlag, patchFlag, rcFlag, noRcFlag, initFlag, verboseFlag, forceFlag, noConfirmFlag, pushFlag bool
+	var autoFlag, majorFlag, minorFlag, patchFlag, rcFlag, noRcFlag, initFlag, verboseFlag, forceFlag, noConfirmFlag, pushFlag bool
+	flag.BoolVar(&autoFlag, "a", false, "")
 	flag.BoolVar(&majorFlag, "M", false, "")
 	flag.BoolVar(&minorFlag, "m", false, "")
 	flag.BoolVar(&patchFlag, "p", false, "")
@@ -60,6 +65,9 @@ func main() {
 	}
 
 	qtyTagTypeFlags := 0
+	if autoFlag {
+		qtyTagTypeFlags++
+	}
 	if majorFlag {
 		qtyTagTypeFlags++
 	}
@@ -70,13 +78,13 @@ func main() {
 		qtyTagTypeFlags++
 	}
 
-	if qtyTagTypeFlags == 0 {
-		log.Error("Invalid usage: must specify one of -M / -m / -p")
-		os.Exit(1)
+	if qtyTagTypeFlags == 0 && !rcFlag {
+		autoFlag = true
+		log.Info("No tag type specified; assuming -a for automatic")
 	}
 
 	if qtyTagTypeFlags > 1 {
-		log.Error("Invalid usage: cannot specify more than one of -M / -m / -p")
+		log.Error("Invalid usage: cannot specify more than one of -a / -M / -m / -p")
 		os.Exit(1)
 	}
 
@@ -152,6 +160,37 @@ func main() {
 		} else {
 			log.Info("There have been no commits since the last tag")
 			os.Exit(0)
+		}
+	}
+
+	// determine the tag type if we're in auto mode
+
+	if autoFlag {
+		if currentVer.Rc > 0 {
+			log.Debug("Latest tag is an RC; creating a RC tag")
+			rcFlag = true
+		} else {
+			commitMessages, err := git.CommitsSinceLastTag()
+			if err != nil {
+				log.Error("%v", err)
+				os.Exit(1)
+			}
+
+			allPatchCommits := true
+			for _, msg := range commitMessages {
+				if !patchCommitPattern.MatchString(msg) {
+					allPatchCommits = false
+					break
+				}
+			}
+
+			if allPatchCommits {
+				log.Debug("All commits since the latest tag are patch commits; creating a patch tag")
+				patchFlag = true
+			} else {
+				log.Debug("Found one or more non-patch commits since the latest tag; creating a minor tag")
+				minorFlag = true
+			}
 		}
 	}
 

@@ -78,7 +78,7 @@ func main() {
 		qtyTagTypeFlags++
 	}
 
-	if qtyTagTypeFlags == 0 && !rcFlag {
+	if qtyTagTypeFlags == 0 && !rcFlag && !initFlag {
 		autoFlag = true
 		log.Info("No tag type specified; assuming -a for automatic")
 	}

@@ -7,3 +7,4 @@ chores:
   - url: "https://github.com/markormesher/tedium-chores"
     branch: "mormesher/auto-tag"
     directory: "auto-tag"
+    exposePlatformToken: true

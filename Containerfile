@@ -24,6 +24,6 @@ RUN apt update \
   ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/build /app
+COPY --from=builder /app/build/main /usr/bin/semver-tagger
 
-CMD ["/app/main", "--help"]
+CMD ["semver-tagger", "--help"]

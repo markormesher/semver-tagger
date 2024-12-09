@@ -10,7 +10,9 @@ Note that _this does not support the full semver spec_. This is a simple, one-si
 go install github.com/markormesher/semver-tagger
 ```
 
-### Usage
+There is also a container image with the tool: `ghcr.io/markormesher/semver-tagger:VERSION`. It is based on Debian and provides `semver-tagger` and `git`.
+
+## Usage
 
 ```shell
 semver-tagger [options]
@@ -35,7 +37,7 @@ Options:
   - `-y`, `--no-confirm` - don't wait for confirmation on the new tag.
   - `-P`, `--push` - push tags to the remote after creating them.
 
-### Examples
+## Examples
 
 > For more examples, check the test cases in the code.
 

@@ -1,0 +1,83 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: /tmp/app
+  docker:
+    - image: cimg/go:1.23.4
+
+jobs:
+  checkout:
+    <<: *defaults
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  fetch-task:
+    <<: *defaults
+    docker:
+      - image: ghcr.io/markormesher/task-fetcher:v0.2.0
+    steps:
+      - run:
+          name: Fetch task binary
+          command: cp /task .
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Lint
+          command: ./task lint
+
+  img:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build container image
+          command: ./task img-build
+      - run:
+          name: Maybe push container image
+          command: |
+            if ! git describe --exact-match HEAD >/dev/null 2>&1; then echo "Not on tagged commit - nothing to do"; exit 0; fi
+            echo "${GHCR_PUBLISH_TOKEN}" | docker login ghcr.io -u markormesher --password-stdin
+            ./task img-push
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - checkout:
+          filters:
+            tags:
+              only: /.*/
+      - fetch-task:
+          filters:
+            tags:
+              only: /.*/
+      - lint:
+          requires:
+            - checkout
+            - fetch-task
+          filters:
+            tags:
+              only: /.*/
+      - img:
+          requires:
+            - checkout
+            - fetch-task
+            - lint
+          filters:
+            tags:
+              only: /.*/

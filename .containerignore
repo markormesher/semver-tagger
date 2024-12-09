@@ -1,0 +1,8 @@
+./.circleci
+./.containerignore
+./.gitignore
+./Containerfile
+./LICENSE.md
+./README.md
+./build
+./taskfile.yml

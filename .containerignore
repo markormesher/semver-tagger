@@ -1,3 +1,4 @@
+./.circleci
 ./.containerignore
 ./.gitignore
 ./Containerfile

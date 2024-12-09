@@ -37,6 +37,15 @@ jobs:
           name: Lint
           command: ./task lint
 
+  test:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Test
+          command: ./task test
+
   img:
     <<: *defaults
     steps:
@@ -73,11 +82,19 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - test:
+          requires:
+            - checkout
+            - fetch-task
+          filters:
+            tags:
+              only: /.*/
       - img:
           requires:
             - checkout
             - fetch-task
             - lint
+            - test
           filters:
             tags:
               only: /.*/

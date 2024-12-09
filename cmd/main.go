@@ -24,7 +24,7 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 -init             Create the initial v0.1.0 version.
 
 -v, --verbose     Verbose logging
--f, --force       Create a tag even no matter what
+-f, --force       Create a tag no matter what
 -y, --no-confirm  Create the tag without confirming
 -P, --push        Run 'git push --tags' after creating the tag
 `

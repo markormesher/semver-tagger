@@ -5,6 +5,5 @@ chores:
   - url: "https://github.com/markormesher/tedium-chores"
     directory: "generate-taskfile"
   - url: "https://github.com/markormesher/tedium-chores"
-    branch: "mormesher/auto-tag"
-    directory: "auto-tag"
+    directory: "tag-new-releases"
     exposePlatformToken: true

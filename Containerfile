@@ -25,4 +25,4 @@ RUN apt update \
 
 COPY --from=builder /app/build/main /usr/local/bin/semver-tagger
 
-CMD ["semver-tagger", "--help"]
+CMD ["/usr/local/bin/semver-tagger", "--help"]

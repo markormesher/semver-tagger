@@ -95,8 +95,12 @@ Examples:
 
 Setting the `-a` flag (or no version type flag at all) will cause the tool to determine the tag type automatically. The logic applied minimal:
 
-- If the latest tag is an RC, apply an RC tag.
-- Otherwise, if all commits since the last tag are chores, fixes or CI-related (as defined by the regex in `main.go`), apply a patch tag.
-- Otherwise, apply a minor tag.
+- If there have been no commits since the last tag, no tag is applied.
+- Otherwise, if all commits since the last tag are non-code commits, no tag is applied.
+- Otherwise, if the latest tag is an RC, an RC tag is applied.
+- Otherwise, if all commits since the last tag are patch commits, a patch tag is applied.
+- Otherwise, a minor tag is applied.
 
 Automatic version detection will never create a major tag or remove the RC counter.
+
+Non-code and patch commits are defined by the regexes in `main.go`.

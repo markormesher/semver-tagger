@@ -32,7 +32,8 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 // TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
 var defaultBranches = []string{"main", "master", "develop"}
 
-var patchCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(build|chore|fix|ci)(\([\w \-]+\))?:`)
+var nonCodeCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(build|ci)(\([\w \-]+\))?:`)
+var patchCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(chore|fix)(\([\w \-]+\))?:`)
 
 func bold(str string) string {
 	return "\033[1m" + str + "\033[0m"
@@ -166,16 +167,28 @@ func main() {
 	// determine the tag type if we're in auto mode
 
 	if autoFlag {
+		commitMessages, err := git.CommitsSinceLastTag()
+		if err != nil {
+			log.Error("%v", err)
+			os.Exit(1)
+		}
+
+		allNonCodeCommits := true
+		for _, msg := range commitMessages {
+			if !nonCodeCommitPattern.MatchString(msg) {
+				allNonCodeCommits = false
+				break
+			}
+		}
+		if allNonCodeCommits {
+			log.Info("All commits since the last tag are non-code commits; not creating a tag")
+			os.Exit(0)
+		}
+
 		if currentVer.Rc > 0 {
 			log.Debug("Latest tag is an RC; creating a RC tag")
 			rcFlag = true
 		} else {
-			commitMessages, err := git.CommitsSinceLastTag()
-			if err != nil {
-				log.Error("%v", err)
-				os.Exit(1)
-			}
-
 			allPatchCommits := true
 			for _, msg := range commitMessages {
 				if !patchCommitPattern.MatchString(msg) {

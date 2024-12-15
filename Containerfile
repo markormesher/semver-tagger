@@ -7,7 +7,7 @@ RUN go mod download
 COPY ./cmd ./cmd
 COPY ./internal ./internal
 
-RUN go build -o ./build/main ./cmd
+RUN go build -o ./build/main ./cmd/...
 
 # ---
 

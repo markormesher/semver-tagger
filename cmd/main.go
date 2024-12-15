@@ -32,7 +32,7 @@ Usage: semver-tagger [-a|-M|-m|-p] [options]
 // TODO: actually detect this from the repo (using refs/remotes/origin/HEAD doesn't work on local-only repos)
 var defaultBranches = []string{"main", "master", "develop"}
 
-var nonCodeCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(build|ci)(\([\w \-]+\))?:`)
+var nonCodeCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(build|ci|docs)(\([\w \-]+\))?:`)
 var patchCommitPattern = *regexp.MustCompile(`^(Merge pull request ')?(chore|fix)(\([\w \-]+\))?:`)
 
 func bold(str string) string {

@@ -7,7 +7,7 @@ Note that _this does not support the full semver spec_. This is a simple, one-si
 ## Installation
 
 ```shell
-go install github.com/markormesher/semver-tagger@latest
+go install github.com/markormesher/semver-tagger/cmd@latest
 ```
 
 There is also a container image with the tool: `ghcr.io/markormesher/semver-tagger:VERSION`. It is based on Debian and provides `semver-tagger` and `git`.

@@ -4,10 +4,10 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 
-COPY ./cmd ./cmd
+COPY ./main.go ./main.go
 COPY ./internal ./internal
 
-RUN go build -o ./build/main ./cmd/...
+RUN go build -o ./build/main ./main.go
 
 # ---
 

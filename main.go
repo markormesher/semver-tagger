@@ -191,7 +191,7 @@ func main() {
 		} else {
 			allPatchCommits := true
 			for _, msg := range commitMessages {
-				if !patchCommitPattern.MatchString(msg) {
+				if !patchCommitPattern.MatchString(msg) && !nonCodeCommitPattern.MatchString(msg) {
 					allPatchCommits = false
 					break
 				}

@@ -11,7 +11,7 @@ RUN go build -o ./build/main ./main.go
 
 # ---
 
-FROM debian:bookworm@sha256:b877a1a3fdf02469440f1768cf69c9771338a875b7add5e80c45b756c92ac20a
+FROM debian:bookworm@sha256:321341744acb788e251ebd374aecc1a42d60ce65da7bd4ee9207ff6be6686a62
 WORKDIR /app
 
 LABEL image.registry=ghcr.io

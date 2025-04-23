@@ -1,6 +1,6 @@
 module github.com/markormesher/semver-tagger
 
-go 1.24.2
+go 1.24.1
 
 tool (
 	github.com/kisielk/errcheck

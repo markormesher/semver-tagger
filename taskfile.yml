@@ -219,3 +219,13 @@ tasks:
     dir: '{{.ROOT_DIR}}'
     cmds:
       - cmd: gofmt -s -w .
+  test:
+    cmds:
+      - task: test-go-root
+  test-go:
+    cmds:
+      - task: test-go-root
+  test-go-root:
+    dir: '{{.ROOT_DIR}}'
+    cmds:
+      - cmd: go test ./...

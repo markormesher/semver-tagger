@@ -14,9 +14,6 @@ RUN go build -o ./build/main ./main.go
 FROM debian:13.3@sha256:5cf544fad978371b3df255b61e209b373583cb88b733475c86e49faa15ac2104
 WORKDIR /app
 
-LABEL image.registry=ghcr.io
-LABEL image.name=markormesher/semver-tagger
-
 RUN apt update \
   && apt install -y --no-install-recommends \
   git \
@@ -26,3 +23,12 @@ RUN apt update \
 COPY --from=builder /app/build/main /usr/local/bin/semver-tagger
 
 CMD ["/usr/local/bin/semver-tagger", "--help"]
+
+LABEL image.name=markormesher/semver-tagger
+LABEL image.registry=ghcr.io
+LABEL org.opencontainers.image.description=""
+LABEL org.opencontainers.image.documentation=""
+LABEL org.opencontainers.image.title="semver-tagger"
+LABEL org.opencontainers.image.url="https://github.com/markormesher/semver-tagger"
+LABEL org.opencontainers.image.vendor=""
+LABEL org.opencontainers.image.version=""
